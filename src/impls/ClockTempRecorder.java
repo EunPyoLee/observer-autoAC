@@ -28,21 +28,26 @@ public class ClockTempRecorder implements ITempPublisher, IGetModeTempPublisher 
         return true;
     }
 
-    public void removeObserver(ITempSubscriber tempObserver){
+    public boolean removeObserver(ITempSubscriber tempObserver){
         for(int i = 0; i < subscribers.size(); ++i){
             if(subscribers.get(i) == tempObserver){
                 subscribers.remove(i);
-                break;
+                return true;
             }
         }
+        return false;
     }
 
     public void publish(){
         for(ITempSubscriber s : subscribers){
-            if(s.isPush()){
-                s.updateTemperature(new StateParam(temperature), this);
-            } else{
-                s.updateTemperature(null, this);
+            try {
+                if(s.isPush()){
+                    s.updateTemperature(new StateParam(temperature), this);
+                } else{
+                    s.updateTemperature(null, this);
+                }
+            } catch(Exception e){
+                System.out.println(e.toString());
             }
         }
     }
